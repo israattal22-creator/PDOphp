@@ -4,67 +4,75 @@ include("connection.php");
 
 try {
 
-    if(isset($_POST["prodBtn"])) {
+    if (isset($_POST["prodBtn"])) {
 
-        $prodName = $_POST["prodname"];
-        $prodPrice = $_POST["prodprice"];
-        $prodDesc = $_POST["proddesc"];
+        $prodName = $_POST["prodName"];
+        $prodPrice = $_POST["prodPrice"];
+        $prodDesc = $_POST["prodDesc"];
 
-        $insertQuery = "INSERT INTO `prodect`( `prodcet_price`, `prodcet_name`, `prodcet_quntity`) VALUES (:prod_name, :prodprice, :proddesc)";
-
+        $insertQuery = "INSERT INTO prodect
+        (prodcet_price, prodcet_name, prodcet_quntity)
+        VALUES
+        (:prodPrice, :prodName, :prodDesc)";
 
         $insertprepare = $connection->prepare($insertQuery);
-         $insertprepare = $connection->bindParam(":prodName", $prodname, PDO::PARAM_STR);
-          $insertprepare = $connection->bindParam(":prodPrice", $prodPrice, PDO::PARAM_INT);
-         $insertprepare = $connection->bindParam(":prodDesc", $prodDesc, PDO::PARAM_STR);
 
+        $insertprepare->bindParam(":prodPrice", $prodPrice, PDO::PARAM_INT);
+        $insertprepare->bindParam(":prodName", $prodName, PDO::PARAM_STR);
+        $insertprepare->bindParam(":prodDesc", $prodDesc, PDO::PARAM_STR);
 
-        if($insertprepare->execute()) {
-            echo "products inserted successfully";
-        }else {
-            echo "products insertion faild!";
+        if ($insertprepare->execute()) {
+            echo "Product inserted successfully";
+        } else {
+            echo "Product insertion failed";
         }
     }
 
-} catch (\Throwable $th) {
-    throw $th;
+} catch (PDOException $e) {
+    echo $e->getMessage();
 }
 
 ?>
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>add products</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  </head>
-  <body>
-  
-    <h1 class="text-center">Add Products</h1>
+<head>
+<meta charset="UTF-8">
+<title>Add Product</title>
 
-<div class="container">
-    
-<form method="post">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="container mt-5">
+
+<h2 class="text-center mb-4">Add Product</h2>
+
+<form method="POST">
 
 <div class="mb-3">
-  <label for="formGroupExampleInput" class="form-label">Product Name</label>
-  <input type="text" class="form-control" id="formGroupExampleInput" name="prodName">
+<label>Product Name</label>
+<input type="text" name="prodName" class="form-control" required>
 </div>
+
 <div class="mb-3">
-  <label for="formGroupExampleInput2" class="form-label">Product Price</label>
-  <input type="text" class="form-control" id="formGroupExampleInput2" name="prodPrice" >
+<label>Product Price</label>
+<input type="number" name="prodPrice" class="form-control" required>
 </div>
+
 <div class="mb-3">
-  <label for="formGroupExampleInput2" class="form-label">Product Description</label>
-  <input type="text" class="form-control" id="formGroupExampleInput2" name="prodDesc" >
+<label>Product Description</label>
+<input type="text" name="prodDesc" class="form-control" required>
 </div>
-<div class="col-12">
-    <button type="submit" class="btn btn-primary" name="prodBtn">add products</button>
-  </div>
+
+<button type="submit" name="prodBtn" class="btn btn-primary">
+Add Product
+</button>
+
 </form>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  </body>
+
+</div>
+
+</body>
 </html>
