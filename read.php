@@ -7,23 +7,25 @@ try {
     $viewQueryPrepare->execute();
     $productsData = $viewQueryPrepare->fetchAll(PDO::FETCH_ASSOC);
 } catch (\Throwable $th) {
-    throw $th;
+    die("Error fetching products: " . $th->getMessage());
 }
 
-if (isset($_GET["delId"])) {
+if (isset($_GET["delId"]) && !empty($_GET["delId"])) {
     try {
-        $delId = $_GET["delId"];
-        $deleteQuery = "DELETE FROM `prodect` WHERE `prodcect_id` = :delId";
+        $delId = (int) $_GET["delId"];
+        $deleteQuery = "DELETE FROM `prodect` WHERE `prodcet_id` = :delId";
         $deleteQueryPrepare = $connection->prepare($deleteQuery);
-        $deleteQueryPrepare->bindParam(":delId", $delId, PDO::PARAM_INT);
+        $deleteQueryPrepare->bindValue(":delId", $delId, PDO::PARAM_INT);
+
         if ($deleteQueryPrepare->execute()) {
-            echo "<script>location.href='read.php'</script>";
+            header("Location: read.php");
             exit; 
         } else {
-            echo "Product is not deleted";
+            print_r($deleteQueryPrepare->errorInfo());
+            exit;
         }
     } catch (\Throwable $th) {
-        throw $th;
+        die("Error deleting product: " . $th->getMessage());
     }
 }
 ?>
@@ -49,23 +51,23 @@ if (isset($_GET["delId"])) {
       <table class="table">
         <thead>
           <tr>
-            <th scope="col">Products Id</th>
-            <th scope="col">Products Name</th>
-            <th scope="col">Products Price</th>
-            <th scope="col">Products Description</th>
-            <th scope="col">Action</th>
+            <th>Products Id</th>
+            <th>Products Name</th>
+            <th>Products Price</th>
+            <th>Products quantity</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($productsData as $value) { ?>
           <tr>
-            <th><?= htmlspecialchars($value["prodcect_id"]) ?></th>
+            <th><?= htmlspecialchars($value["prodcet_id"]) ?></th>
             <td><?= htmlspecialchars($value["prodcet_name"]) ?></td>
             <td><?= htmlspecialchars($value["prodcet_price"]) ?></td>
             <td><?= htmlspecialchars($value["prodcet_quntity"]) ?></td>
             <td>
-              <a href="read.php?delId=<?= urlencode($value["prodcect_id"]) ?>" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
-              <a href="updateproducts.php?upId=<?= urlencode($value["prodcect_id"]) ?>" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i></a>
+              <a href="read.php?delId=<?= urlencode($value["prodcet_id"]) ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');"><i class="fa-solid fa-trash"></i></a>
+              <a href="updateproducts.php?upId=<?= urlencode($value["prodcet_id"]) ?>" class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i></a>
             </td>
           </tr>
           <?php } ?>
