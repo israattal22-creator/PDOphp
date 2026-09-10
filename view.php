@@ -2,7 +2,6 @@
 
 include('connection.php');
 
-
 try {
 
     $viewQuery = "SELECT * FROM `products`";
@@ -13,15 +12,30 @@ try {
 
     $prodData = $viewPrepare->fetchAll(PDO::FETCH_ASSOC);
 
-    echo "<pre>";
-    print_r($prodData);
-    echo "</pre>";
+    // echo "<pre>";
+    // print_r($prodData);
+    // echo "</pre>";
 } catch (\Throwable $th) {
     throw $th;
 }
 
+if(isset($_GET['delId'])){
 
+    $deleteQuery = "DELETE FROM `products` WHERE prod_id = :id";
 
+    $deletePrepare = $connect->prepare($deleteQuery);
+    $deletePrepare->bindParam(':id',$_GET['delId'],PDO::PARAM_INT);
+
+    if($deletePrepare->execute()){
+        echo "<br>Item Deleted Successfully<br>";
+        header("Location:view.php");
+    }
+    else{
+        echo "<br>Product with provided id is not available!<br>";
+
+    }
+
+}
 
 
 ?>
@@ -44,6 +58,7 @@ try {
 <body>
 
     <div class="container">
+    <h1 class="text-center">All Products</h1>
         <div class="row">
 
     <?php foreach($prodData as $prod){ ?>
@@ -55,8 +70,8 @@ try {
                         <h5 class="card-title"><?php echo $prod['prod_name'] ?></h5>
                         <p class="card-text">Price: <?php echo $prod["prod_price"] ?></p>
                         <p class="card-text"><?php echo $prod["prod_desc"] ?>.</p>
-                        <a href="#" class="btn btn-danger">Delete</a>
-                        <a href="#" class="btn btn-warning">Update</a>
+                        <a href="view.php?delId=<?php echo $prod["prod_id"] ?>" class="btn btn-danger">Delete</a>
+                        <a href="update.php?upId=<?php echo $prod["prod_id"] ?>" class="btn btn-warning">Update</a>
                     </div>
                 </div>
             </div>
