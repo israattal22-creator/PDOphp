@@ -9,18 +9,44 @@ try {
         $prodName = $_POST["prodName"];
         $prodPrice = $_POST["prodPrice"];
         $prodDesc = $_POST["prodDesc"];
+        $prodImage = $_FILES["prodImage"];
 
-        $insertQuery = "INSERT INTO prodect
-        (prodcet_price, prodcet_name, prodcet_quntity)
+        echo "<pre>";
+        print_r($prodImage);
+        echo "</pre>";
+        if($prodImage["size"] > 500000){
+            echo "image to large";
+        } else{
+        echo "<pre>";
+        print_r($prodImage);
+        echo "</pre>";
+
+            $extension = explode("." , $prodImage["name"])[1];
+
+            // $extension = $extension[1];
+
+            // echo "<pre>";
+            // print_r($prodImage);
+            // echo "</pre>";       
+
+            $uinquename = uniqid() . "." . $extension;
+            echo $uinquename;
+
+            move_uploaded_file($prodImage['tmp_name'],"Image/$uinquename");
+
+
+        }
+        $insertQuery = "INSERT INTO product
+        (prod_price, prod_name, prod_desc, pro_Image)
         VALUES
-        (:prodPrice, :prodName, :prodDesc)";
+        (:prodPrice, :prodName, :prodDesc, :prodImage)";
 
         $insertprepare = $connection->prepare($insertQuery);
 
         $insertprepare->bindParam(":prodPrice", $prodPrice, PDO::PARAM_INT);
         $insertprepare->bindParam(":prodName", $prodName, PDO::PARAM_STR);
         $insertprepare->bindParam(":prodDesc", $prodDesc, PDO::PARAM_STR);
-
+        $insertprepare->bindParam(":prodImage", $uinquename, PDO::PARAM_STR);
         if ($insertprepare->execute()) {
             echo "Product inserted successfully";
         } else {
@@ -49,7 +75,7 @@ try {
 
 <h2 class="text-center mb-4">Add Product</h2>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
 <div class="mb-3">
 <label>Product Name</label>
@@ -64,6 +90,11 @@ try {
 <div class="mb-3">
 <label>Product Description</label>
 <input type="text" name="prodDesc" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Product Image</label>
+<input type="file" name="prodImage" class="form-control" required>
 </div>
 
 <button type="submit" name="prodBtn" class="btn btn-primary">
