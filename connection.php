@@ -2,7 +2,7 @@
 
 try {
   
-    $connect = new PDO("mysql:host=localhost;;dbname=2512G1","root","");
+    $connect = new PDO("mysql:host=localhost;dbname=2512G1","root","");
 
 
 
